@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top left, hsl(var(--p) / 0.18), transparent 34rem),
+      radial-gradient(circle at bottom right, hsl(var(--s) / 0.14), transparent 30rem),
+      hsl(var(--b2));
+  }
+}
+
+@layer components {
+  .yappy-card {
+    @apply border border-base-300/70 bg-base-100/85 shadow-2xl shadow-primary/10 backdrop-blur-xl;
+  }
+
+  .yappy-gradient-text {
+    @apply bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent;
+  }
+}
