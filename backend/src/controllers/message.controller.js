@@ -2,6 +2,7 @@ import cloudinary from "../lib/cloudinary.js";
 import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
+import mongoose from "mongoose";
 
 export const getUsersForSidebar = async (req, res) => {
     try {
@@ -19,7 +20,6 @@ export const getMessages = async (req, res) => {
     try {
         const { id: userToChatId } = req.params;
         const myId = req.user._id;
-
         if (!mongoose.Types.ObjectId.isValid(userToChatId)) {
             return res.status(400).json({
                 error: "Invalid user ID",
@@ -32,6 +32,8 @@ export const getMessages = async (req, res) => {
                 { senderId: userToChatId, receiverId: myId },
             ],
         });
+
+        console.log(messages)
 
         res.status(200).json(messages);
     } catch (error) {
