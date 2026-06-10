@@ -20,6 +20,10 @@ export const getMessages = async (req, res) => {
     try {
         const { id: userToChatId } = req.params;
         const myId = req.user._id;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const skip = (page - 1) * limit;
+
         if (!mongoose.Types.ObjectId.isValid(userToChatId)) {
             return res.status(400).json({
                 error: "Invalid user ID",
@@ -31,9 +35,20 @@ export const getMessages = async (req, res) => {
                 { senderId: myId, receiverId: userToChatId },
                 { senderId: userToChatId, receiverId: myId },
             ],
-        });
+        }).sort({ createdAt: -1 }) // newest first
+            .skip(skip)
+            .limit(limit);
 
-        res.status(200).json(messages);
+        const totalMessages = await Message.countDocuments({
+            $or: [
+                { senderId: myId, receiverId: userToChatId },
+                { senderId: userToChatId, receiverId: myId },
+            ],
+        });
+        res.status(200).json({
+            messages: messages.reverse(),
+            hasMore: skip + messages.length < totalMessages,
+        });
     } catch (error) {
         console.log("Error in getMessages controller:", error.message);
         res.status(500).json({
